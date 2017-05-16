@@ -17,10 +17,7 @@ class Reader:
             - Returns:
                 docs: list of docs
                num_docs: number of documents
-            """
-        print type(os.environ.get("DIRECTORY"))
-        print self.dir
-        print type(self.dir)
+        """
         docs = [f for f in listdir(self.dir) if isfile(join(self.dir,
                 f))]
         return (docs, len(docs))
@@ -32,11 +29,11 @@ class Reader:
 
     def _read_doc(self, doc_path):
         """Read a document, get all terms
-    ....    - Args:
-    ....        doc_path: str of document path
-    ....    - Returns:
-    ....        terms: terms within document as list
-    ....    """
+        - Args:
+            doc_path: str of document path
+        - Returns:
+            terms: terms within document as list
+        """
 
         with open(doc_path, 'r') as f:
             terms = self._remove_punc(f.read())
@@ -44,28 +41,21 @@ class Reader:
 
     def _make_runs(self, docs, num_docs):
         """Make runs for memory saving
-            - Args:
-                docs: name of docs
-                num_docs: number of documents
-            - Returns:
-                runs: list of list of docs
+        - Args:
+            docs: name of docs
+            num_docs: number of documents
+        - Returns:
+            runs: list of list of docs
                   e.g. [[doc1, doc2], [doc3, doc4]]
-    ....    """
-
+        """
         num_runs = num_docs / 10 + 1
         runs = []
-        for run in xrange(1, num_runs):
-
-                # get current run of docs
-
-            current_run = docs[:num_runs]
-
-            # remove current run from docs
-
-            docs = docs[num_runs:]
-
-            # append to runs
-
+        for run in xrange(0, num_runs):
+            # get current run of docs.
+            current_run = docs[:10]
+            # remove current run from docs.
+            docs = docs[10:]
+            # append to runs.
             runs.append(current_run)
         return runs
 
