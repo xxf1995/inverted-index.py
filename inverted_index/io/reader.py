@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 import os
 import string
-from os import listdir
 from os.path import isfile, join
+from ..utils.threading import *
 
 
 class Reader:
@@ -13,18 +13,17 @@ class Reader:
 
     def _get_docs(self):
         """Get all docs under directory, as docId
-            - Args:
-            - Returns:
-                docs: list of docs
-               num_docs: number of documents
+        - Args:
+        - Returns:
+            docs: list of docs
+            num_docs: number of documents
         """
-        docs = [f for f in listdir(self.dir) if isfile(join(self.dir,
+        docs = [f for f in os.listdir(self.dir) if isfile(join(self.dir,
                 f))]
         return (docs, len(docs))
 
     def _remove_punc(self, content):
         """Remove punctuation from given text"""
-
         return content.translate(None, string.punctuation)
 
     def _read_doc(self, doc_path):
@@ -34,7 +33,6 @@ class Reader:
         - Returns:
             terms: terms within document as list
         """
-
         with open(doc_path, 'r') as f:
             terms = self._remove_punc(f.read())
             return terms.split()
@@ -59,5 +57,12 @@ class Reader:
             runs.append(current_run)
         return runs
 
-
-
+    def _read_run(self, run):
+        """Read documents in a run
+        - Args:
+            run: a list of document (10 at most)
+        - Returns:
+            terms: all terms within the current run
+        """
+        terms = threading.mlp(_read_doc, run)
+        return terms
