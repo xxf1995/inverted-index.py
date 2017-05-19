@@ -44,6 +44,8 @@ class TestIO(unittest.TestCase):
         r.dir = os.path.dirname(os.path.realpath(__file__)) + '/test_docs/'
         docs, num_docs = r._get_docs()
         runs = r._make_runs(docs, num_docs)
+        # make runs to temp
         for run in runs:
-            r.merge_runs(run)
+            r._run_to_temp(run)
+        r.merge_runs()
 

@@ -47,13 +47,13 @@ class IO:
             runs: list of list of docs
                   e.g. [[doc1, doc2], [doc3, doc4]]
         """
-        num_runs = num_docs / 10 + 1
+        num_runs = num_docs / 5 + 1
         runs = []
         for run in xrange(0, num_runs):
             # get current run of docs.
-            current_run = docs[:10]
+            current_run = docs[:5]
             # remove current run from docs.
-            docs = docs[10:]
+            docs = docs[5:]
             # append to runs.
             runs.append(current_run)
         return runs
@@ -79,11 +79,12 @@ class IO:
 
     def _merge_run_pairwisely(self, run1_path, run2_path):
         """Merge runs pairwisely, sort alphabetically"""
-        terms_run1, terms_run2 = []
-        with open(run1_path, 'r') as f:
-            terms_run1 = f.readlines()
-        with open(run2_path, 'r') as f:
-            terms_run2 = f.readlins()
+        terms_run1 = []
+        terms_run2 = []
+        with open(run1_path, 'r') as f1:
+            terms_run1 = f1.readlines()
+        with open(run2_path, 'r') as f2:
+            terms_run2 = f2.readlines()
         terms_merge = manipulate.alphabetically(
             terms_run1 + terms_run2)
         # delete run1 and run 2
@@ -91,9 +92,9 @@ class IO:
         os.remove(run2_path)
         # store merged run
         with open(run1_path, 'w') as f:
-            f.write("\n".join(terms))
+            f.write("\n".join(terms_merge))
 
-    def merge_runs(self, docs):
+    def merge_runs(self):
         """Merge sorted runs into big text
         - Args:
             docs: temp runs (sorted)
@@ -103,7 +104,8 @@ class IO:
         self.dir = os.path.abspath(os.path.join(
             __file__,
             os.pardir)) + '/temp/'
+        docs, num_docs = self._get_docs()
         # merge sorted runs pair-wisely
-        while len(self._get_docs()) > 2:
-            runs = self._get_docs()
-            self._merge_run_pairwisely(runs[0], runs[1])
+        while num_docs >= 2:
+            self._merge_run_pairwisely(docs[0], docs[1])
+            docs, num_docs = self._get_docs()
