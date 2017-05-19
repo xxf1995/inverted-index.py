@@ -1,4 +1,3 @@
-import itertools
 from multiprocessing import cpu_count
 from multiprocessing.dummy import Pool as ThreadPool
 
@@ -14,5 +13,4 @@ def mlp(func, run):
     terms = pool.map(func, run)
     pool.close()
     pool.join()
-    terms = list(itertools.chain.from_iterable(terms))
     return terms

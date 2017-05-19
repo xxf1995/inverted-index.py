@@ -1,4 +1,5 @@
 """Manipulate terms."""
+import collections
 
 def alphabetically(terms):
 	"""Sort terms alphabetically
@@ -7,4 +8,4 @@ def alphabetically(terms):
 	- Returns:
 	    terms: list of terms (sorted)
 	"""
-	return sorted(terms, key=str.lower)
+	return collections.OrderedDict(sorted(terms.items()))
