@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import os
 import json
-import string
 import mult_thread
 import manipulate
 
@@ -12,6 +11,14 @@ class IO:
     def __init__(self):
         self.dir = os.environ.get('DIRECTORY')
         self.run_id = 0
+
+    def _json_reader(self, path):
+        with open(path) as f:
+            return json.load(f)
+
+    def _json_writer(self, path, content):
+        with open(path, 'w') as f:
+            json.dump(content, f)
 
     def _get_docs(self):
         """Get all docs under directory, as docId
@@ -24,10 +31,6 @@ class IO:
                 f))]
         return (docs, len(docs))
 
-    def _remove_punc(self, content):
-        """Remove punctuation from given text"""
-        return content.translate(None, string.punctuation)
-
     def _read_doc(self, doc_name):
         """Read a document, get all terms
         - Args:
@@ -36,9 +39,10 @@ class IO:
             terms: {term1:doc_name, term2:doc_name...}
         """
         with open(doc_name, 'r') as f:
-            terms = self._remove_punc(f.read())
-            terms = [term.lower() for term in terms.split()]
-            return dict.fromkeys(terms, doc_name.split('/')[-1])
+            terms = manipulate.remove_punc(f.read())
+            # to lower case, add source (doc.id) as value
+            terms = manipulate.lower_dict(terms, doc_name.split('/')[-1])
+            return terms
 
     def _make_runs(self, docs, num_docs):
         """Make runs for memory saving
@@ -68,33 +72,29 @@ class IO:
             terms: all terms within the current run
         """
         terms = mult_thread.mlp(self._read_doc, run)
+        terms = manipulate.flatten(terms)
         temp_path = os.path.abspath(os.path.join(
             __file__,
             os.pardir)) + '/temp/'
         # merge list of dict, split and sort.
-        terms = { k: v for d in terms for k, v in d.items()}
         terms = manipulate.alphabetically(terms)
         # write to temp folder.
-        with open(temp_path + str(self.run_id) + '.json', 'w') as f:
-            json.dump(terms, f)
+        self._json_writer(temp_path + str(self.run_id) + '.json',
+            terms)
         self.run_id += 1
 
     def _merge_run_pairwisely(self, run1_path, run2_path):
         """Merge runs pairwisely, sort alphabetically"""
-        terms_run1 = []
-        terms_run2 = []
-        with open(run1_path) as f1:
-            terms_run1 = json.load(f1)
-        with open(run2_path) as f2:
-            terms_run2 = json.load(f2)
+        terms_run1 = self._json_reader(run1_path)
+        terms_run2 = self._json_reader(run2_path)
         terms_merge = manipulate.alphabetically(
-            dict(terms_run1.items() + terms_run2.items()))
+            terms_run1 + terms_run2)
         # delete run1 and run 2
         os.remove(run1_path)
         os.remove(run2_path)
         # store merged run
-        with open(run1_path, 'w') as f:
-            json.dump(terms_merge, f)
+        self._json_writer(run1_path,
+            terms_merge)
 
     def merge_runs(self):
         """Merge sorted runs into big text

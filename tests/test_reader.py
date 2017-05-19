@@ -1,5 +1,6 @@
 import os
 import unittest
+from inverted_index.utils import manipulate
 from inverted_index.utils.io import IO
 
 
@@ -13,17 +14,11 @@ class TestIO(unittest.TestCase):
         self.assertIsInstance(docs, list)
         self.assertIsInstance(num_docs, int)
 
-    def test_remove_punc(self):
-        r = IO()
-        test_str = "Hi, this is a test sentence."
-        test_str = r._remove_punc(test_str)
-        self.assertEqual(test_str, 'Hi this is a test sentence')
-
     def test_read_doc(self):
         r = IO()
         r.dir = os.path.dirname(os.path.realpath(__file__)) + '/test_docs/'
         file_path = r.dir + '1.txt'
-        self.assertIsInstance(r._read_doc(file_path), dict)
+        self.assertIsInstance(r._read_doc(file_path), list)
 
     def test_make_runs(self):
         r = IO()
