@@ -1,4 +1,5 @@
 """Manipulate terms."""
+import os
 import string
 import redis_init
 from itertools import chain

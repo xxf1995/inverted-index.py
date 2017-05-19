@@ -17,7 +17,6 @@ class TestManipulate(unittest.TestCase):
         with open(path) as f:
             data = json.load(f)
             manipulate._dict_aggregation(data)
-            haha
 
 
 
