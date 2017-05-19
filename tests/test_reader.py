@@ -23,7 +23,7 @@ class TestIO(unittest.TestCase):
         r = IO()
         r.dir = os.path.dirname(os.path.realpath(__file__)) + '/test_docs/'
         file_path = r.dir + '1.txt'
-        self.assertIsInstance(r._read_doc(file_path), list)
+        self.assertIsInstance(r._read_doc(file_path), dict)
 
     def test_make_runs(self):
         r = IO()
