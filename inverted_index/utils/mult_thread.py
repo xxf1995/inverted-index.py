@@ -1,3 +1,4 @@
+import itertools
 from multiprocessing import cpu_count
 from multiprocessing.dummy import Pool as ThreadPool
 
@@ -5,7 +6,7 @@ def mlp(func, run):
     """multithead_processing
     - Args:
         func: function for multithead_processing
-        run: set of documents
+        run: list of documents
     - Returns:
         terms: list of terms in all runs
     """
@@ -13,4 +14,5 @@ def mlp(func, run):
     terms = pool.map(func, run)
     pool.close()
     pool.join()
+    terms = list(itertools.chain.from_iterable(terms))
     return terms
