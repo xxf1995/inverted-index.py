@@ -45,7 +45,6 @@ def _build_inverted_index(data):
         os.remove(dict_path)
     r_p.flushdb()
     # get all terms.
-    print data
     terms = [item['t'] for item in data]
     dic = manipulate._dict_aggregation(terms)
     manipulate._post_aggregation(r_p, data)

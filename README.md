@@ -37,6 +37,12 @@ make init # install requirements
 make test # run tests
 ```
 
+## Run
+
+```python
+python app.py
+```
+
 ## Index
 
 `dictionary` was stored as a json file in `../project/utils/dictionary/`.
@@ -59,7 +65,7 @@ They are **ordered**.
 ```python
 r.zrange('postings', from, to)
 # from is the start position, to is the end position, e.g.
-r.zrange('postings', positing, positing + doc.freq) is the current term's postings
+r.zrange('postings', start_position, start_position + doc.freq)
 ```
 
 Then plug into ranking model.
