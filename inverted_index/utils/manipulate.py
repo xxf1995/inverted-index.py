@@ -38,8 +38,11 @@ def build_inverted_index(data):
 		os.environ.get('POST_DB'))
 	# flush db before create new index.
 	# remove dictionary.json
-	if os.path.isfile(os.environ.get('DICT_PATH')):
-	    os.remove(os.environ.get('DICT_PATH'))
+	dict_path =  os.path.abspath(
+		os.path.join(__file__,os.pardir)
+		) + '/dictionary/'
+	if os.path.isfile(dict_path):
+	    os.remove(dict_path)
 	r_p.flushdb()
 	# get all terms.
 	terms = [item['t'] for item in data]
