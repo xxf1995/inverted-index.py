@@ -6,7 +6,16 @@
 
 Eanble fast search for information retrieval (text retrieval/text[tag]-based multimedia retrieval).
 
-## WORKING
+## Config:
+
+With `.env` under project root.
+
+```python
+DIRECTORY=/.../.../...  # Documents to index
+HOST=localhost # redis host
+PORT=6379 # redis port
+POST_DB=1 # redis db
+```
 
 ## Pipeline:
 
