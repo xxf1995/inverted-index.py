@@ -1,5 +1,6 @@
 """Manipulate terms."""
 import os
+import json
 import string
 import redis_init
 from itertools import chain
@@ -11,7 +12,8 @@ def remove_punc(content):
 
 def lower_dict(terms, value):
 	"""List of terms to lower case make dictionary."""
-	return [{'t': term.lower(), 'd': value} for term in terms.split()]
+	terms = terms.split()
+	return [{'t': term.lower(), 'd': value, 'tf': terms.count(term)} for term in terms]
 
 def flatten(terms):
 	"""list to np array."""
@@ -24,20 +26,48 @@ def alphabetically(terms):
 	- Returns:
 	    terms: list of terms (sorted)
 	"""
-	return sorted(terms, key=itemgetter('t')) 
+	return sorted(terms, key=itemgetter('t'))
 
-def _dict_aggregation(data):
-	"""Generate dictionary, term: doc.freq.
-	- Args:
-        data: dict of aggregated runs.
-	- Returns:
+
+def build_inverted_index(data):
+	"""Build inverted index.
 	"""
-	r = redis_init.con(
+	r_p = redis_init.con(
 		os.environ.get('HOST'),
 		os.environ.get('PORT'),
-		os.environ.get('DICT_DB'))
+		os.environ.get('POST_DB'))
+	# flush db before create new index.
+	# remove dictionary.json
+	if os.path.isfile(os.environ.get('DICT_PATH')):
+	    os.remove(os.environ.get('DICT_PATH'))
+	r_p.flushdb()
+	# get all terms.
 	terms = [item['t'] for item in data]
-	for term in terms:
-		r.set(term, terms.count(term))
-		terms.remove(term)
+	_dict_aggregation(terms)
+	_post_aggregation(r_p, data)
 
+
+def _dict_aggregation(terms):
+	"""Generate dictionary, term: doc.freq.
+	- Args:
+        data: list(dict) of aggregated runs.
+	"""
+	dictionary = []
+	for term in terms:
+		count = terms.count(term)
+		if count > 0:
+		    dictionary.append({term: count})
+		    terms = filter(lambda a: a != term, terms)
+
+	return dictionary
+
+def _post_aggregation(r, data):
+	"""Generate postings, term: term.freq doc.name.
+	- Args:
+	    con: redis connection instance.
+	    terms: list(dict) of aggregated runs
+	"""
+	for item in data:
+		r.hmset(
+			r.randomkey(),
+			item)
