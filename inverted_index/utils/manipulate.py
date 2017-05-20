@@ -28,28 +28,6 @@ def alphabetically(terms):
 	"""
 	return sorted(terms, key=itemgetter('t'))
 
-
-def build_inverted_index(data):
-	"""Build inverted index.
-	"""
-	r_p = redis_init.con(
-		os.environ.get('HOST'),
-		os.environ.get('PORT'),
-		os.environ.get('POST_DB'))
-	# flush db before create new index.
-	# remove dictionary.json
-	dict_path =  os.path.abspath(
-		os.path.join(__file__,os.pardir)
-		) + '/dictionary/'
-	if os.path.isfile(dict_path):
-	    os.remove(dict_path)
-	r_p.flushdb()
-	# get all terms.
-	terms = [item['t'] for item in data]
-	_dict_aggregation(terms)
-	_post_aggregation(r_p, data)
-
-
 def _dict_aggregation(terms):
 	"""Generate dictionary, term: doc.freq.
 	- Args:

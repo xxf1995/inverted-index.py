@@ -12,11 +12,11 @@ class IO:
         self.dir = os.environ.get('DIRECTORY')
         self.run_id = 0
 
-    def _json_reader(self, path):
+    def json_reader(self, path):
         with open(path) as f:
             return json.load(f)
 
-    def _json_writer(self, path, content):
+    def json_writer(self, path, content):
         with open(path, 'w') as f:
             json.dump(content, f)
 
@@ -64,7 +64,7 @@ class IO:
             runs.append(current_run)
         return runs
 
-    def _run_to_temp(self, run):
+    def run_to_temp(self, run):
         """Read documents in a run
         - Args:
             run: a list of document (10 at most)
@@ -79,21 +79,24 @@ class IO:
         # merge list of dict, split and sort.
         terms = manipulate.alphabetically(terms)
         # write to temp folder.
-        self._json_writer(temp_path + str(self.run_id) + '.json',
+        self.json_writer(temp_path + str(self.run_id) + '.json',
             terms)
         self.run_id += 1
 
     def _merge_run_pairwisely(self, run1_path, run2_path):
         """Merge runs pairwisely, sort alphabetically"""
-        terms_run1 = self._json_reader(run1_path)
-        terms_run2 = self._json_reader(run2_path)
+        terms_run1 = self.json_reader(run1_path)
+        terms_run2 = self.json_reader(run2_path)
         terms_merge = manipulate.alphabetically(
             terms_run1 + terms_run2)
         # delete run1 and run 2
         os.remove(run1_path)
         os.remove(run2_path)
         # store merged run
-        self._json_writer(run1_path,
+        path = os.path.abspath(os.path.join(
+            __file__,
+            os.pardir)) + '/temp/'
+        self.json_writer(path + 'merged.json',
             terms_merge)
 
     def merge_runs(self):

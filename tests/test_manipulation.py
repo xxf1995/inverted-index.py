@@ -1,6 +1,7 @@
 import os
 import json
 import unittest
+import inverted_index.app as app
 from inverted_index.utils import manipulate
 
 
@@ -16,7 +17,4 @@ class TestManipulate(unittest.TestCase):
         path = os.path.dirname(os.path.realpath(__file__)) + '/test_json/test.json' 
         with open(path) as f:
             data = json.load(f)
-            manipulate.build_inverted_index(data)
-
-
-
+            app._build_inverted_index(data)
