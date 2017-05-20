@@ -23,8 +23,7 @@ def pipeline():
 
 
 def _build_inverted_index(data):
-	"""Build inverted index.
-	"""
+	"""Build inverted index."""
 	r_p = redis_init.con(
 		os.environ.get('HOST'),
 		os.environ.get('PORT'),
