@@ -10,6 +10,9 @@ class IO:
 
     def __init__(self):
         self.dir = os.environ.get('DIRECTORY')
+        self.temp = os.path.abspath(
+            os.path.join(__file__, os.pardir)
+            ) + '/temp/'
         self.run_id = 0
 
     def json_reader(self, path):
@@ -20,6 +23,11 @@ class IO:
         with open(path, 'w') as f:
             json.dump(content, f)
 
+    def clear_temp(self):
+        """clear temp folder"""
+        files = [f for f in os.listdir(self.temp)]
+        [os.remove(self.temp + f) for f in files]
+
     def _get_docs(self):
         """Get all docs under directory, as docId
         - Args:
@@ -28,6 +36,18 @@ class IO:
             num_docs: number of documents
         """
         docs = [self.dir + f for f in os.listdir(self.dir) if os.path.isfile(os.path.join(self.dir,
+                f))]
+        return (docs, len(docs))
+
+    def _get_docs_with_path(self, path):
+        """Get all docs under directory, as docId
+        - Args:
+            path: document path.
+        - Returns:
+            docs: list of docs
+            num_docs: number of documents
+        """
+        docs = [path + f for f in os.listdir(path) if os.path.isfile(os.path.join(path,
                 f))]
         return (docs, len(docs))
 
@@ -73,13 +93,10 @@ class IO:
         """
         terms = mult_thread.mlp(self._read_doc, run)
         terms = manipulate.flatten(terms)
-        temp_path = os.path.abspath(os.path.join(
-            __file__,
-            os.pardir)) + '/temp/'
         # merge list of dict, split and sort.
         terms = manipulate.alphabetically(terms)
         # write to temp folder.
-        self.json_writer(temp_path + str(self.run_id) + '.json',
+        self.json_writer(self.temp + str(self.run_id) + '.json',
             terms)
         self.run_id += 1
 
@@ -93,10 +110,7 @@ class IO:
         os.remove(run1_path)
         os.remove(run2_path)
         # store merged run
-        path = os.path.abspath(os.path.join(
-            __file__,
-            os.pardir)) + '/temp/'
-        self.json_writer(path + 'merged.json',
+        self.json_writer(self.temp + 'merged.json',
             terms_merge)
 
     def merge_runs(self):
@@ -106,11 +120,8 @@ class IO:
         - Returns:
         """
         # change current dir to temp dir
-        self.dir = os.path.abspath(os.path.join(
-            __file__,
-            os.pardir)) + '/temp/'
-        docs, num_docs = self._get_docs()
+        docs, num_docs = self._get_docs_with_path(self.temp)
         # merge sorted runs pair-wisely
         while num_docs >= 2:
             self._merge_run_pairwisely(docs[0], docs[1])
-            docs, num_docs = self._get_docs()
+            docs, num_docs = self._get_docs_with_path(self.temp)
