@@ -5,6 +5,7 @@
 [![codecov](https://codecov.io/gh/bwanglzu/inverted-index.py/branch/master/graph/badge.svg)](https://codecov.io/gh/bwanglzu/inverted-index.py)
 
 Eanble fast search for information retrieval (text retrieval/text[tag]-based multimedia retrieval).
+A side small project for thesis.
 
 ## Config:
 
@@ -39,12 +40,26 @@ make test # run tests
 ## Index
 
 `dictionary` was stored as a json file in `../project/utils/dictionary/`.
-`postings` was stored in redis as:
+`postings` was stored in redis as `[sorted set](http://jadianes.me/intro-redis-python)` as `('postings', score, {term, term.freq, doc.name})`, for example:
 
 ```python
-{id: {term, term.freq, doc.name}}
+('postings', 1, {'a', 1, '1.txt'})
+('postings', 2, {'a', 3, '2.txt'})
+('postings', 3, {'b', 1, '1.txt'})
 ```
+
+They are **ordered**.
 
 ## What's next?
 
-Load `dictionary` into memory for fast query and query documents from redis.
+1. Load `dictionary` into memory for fast query and query documents from redis.
+2. Get `term`, `doc.freq` and it's `position` from memory.
+3. Retrieve `term.freq`, `doc.id` from redis with:
+
+```python
+r.zrange('postings', from, to)
+# from is the start position, to is the end position, e.g.
+r.zrange('postings', positing, positing + doc.freq) is the current term's postings
+```
+
+Then plug into ranking model.

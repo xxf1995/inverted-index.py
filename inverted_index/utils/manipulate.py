@@ -54,7 +54,7 @@ def _post_aggregation(r, data):
         con: redis connection instance.
         terms: list(dict) of aggregated runs
     """
-    for item in data:
-        r.hmset(
-            r.randomkey(),
+    for idx, item in enumerate(data):
+        r.zadd('postings',
+            idx,
             item)
