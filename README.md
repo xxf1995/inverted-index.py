@@ -27,3 +27,24 @@ POST_DB=1 # redis db
 ## Structure
 
 ![inverted-index](img/1.png)
+
+## Build:
+
+```python
+git clone https://github.com/bwanglzu/inverted-index.py.git
+make init # install requirements
+make test # run tests
+```
+
+## Index
+
+`dictionary` was stored as a json file in `../project/utils/dictionary/`.
+`postings` was stored in redis as:
+
+```python
+{id: {term, term.freq, doc.name}}
+```
+
+## What's next?
+
+Load `dictionary` into memory for fast query and query documents from redis.

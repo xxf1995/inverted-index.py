@@ -18,11 +18,16 @@ def pipeline():
     # merged runs will be the only doc in temp.
     path = os.path.dirname(
         os.path.realpath(__file__)
-    ) + '/utils/temp/merged.json'
+    )
     # load run
-    data = io._read_doc(path)
+    data = io.json_reader(
+    	path + '/utils/temp/merged.json')
     # build inverted index
-    _build_inverted_index(data)
+    dic = _build_inverted_index(data)
+    # write dictionary
+    io.json_writer(
+    	path + '/utils/dictionary/dictionary.json',
+    	dic)
 
 
 def _build_inverted_index(data):
@@ -40,9 +45,11 @@ def _build_inverted_index(data):
         os.remove(dict_path)
     r_p.flushdb()
     # get all terms.
+    print data
     terms = [item['t'] for item in data]
-    manipulate._dict_aggregation(terms)
+    dic = manipulate._dict_aggregation(terms)
     manipulate._post_aggregation(r_p, data)
+    return dic
 
 if __name__ == '__main__':
     pipeline()

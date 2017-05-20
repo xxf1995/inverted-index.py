@@ -51,7 +51,7 @@ class IO:
                 f))]
         return (docs, len(docs))
 
-    def _read_doc(self, doc_name):
+    def _read_manipulate(self, doc_name):
         """Read a document, get all terms
         - Args:
             doc_name: str of document name
@@ -91,7 +91,7 @@ class IO:
         - Returns:
             terms: all terms within the current run
         """
-        terms = mult_thread.mlp(self._read_doc, run)
+        terms = mult_thread.mlp(self._read_manipulate, run)
         terms = manipulate.flatten(terms)
         # merge list of dict, split and sort.
         terms = manipulate.alphabetically(terms)
