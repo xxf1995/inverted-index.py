@@ -27,7 +27,7 @@ POST_DB=1 # redis db
 
 ## Structure
 
-![inverted-index](img/1.png)
+![inverted-index](img/inverted_index.png)
 
 ## Build:
 
@@ -58,7 +58,7 @@ python app.py
 
 ```python
 [
-    (postings, 1, "{u'tf': 1, u't': u'a', u'd': u'1.txt'}"),
+    (postings, 1, "{'tf': 1, 't': 'a', 'd': '1.txt'}"),
     ...
 ]
 ```
