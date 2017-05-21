@@ -39,10 +39,10 @@ def _dict_aggregation(terms):
     data: list(dict) of aggregated runs.
     """
     dictionary = []
-    for term in terms:
+    for idx,term in enumerate(terms):
         count = terms.count(term)
         if count > 0:
-            dictionary.append({term: count})
+            dictionary.append({term: {'id': idx, 'df': count}})
             terms = filter(lambda a: a != term, terms)
 
     return dictionary
