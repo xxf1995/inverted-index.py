@@ -5,7 +5,8 @@
 [![codecov](https://codecov.io/gh/bwanglzu/inverted-index.py/branch/master/graph/badge.svg)](https://codecov.io/gh/bwanglzu/inverted-index.py)
 
 Eanble fast search for information retrieval (text retrieval/text[tag]-based multimedia retrieval).
-A side small project for thesis.
+
+A side project for my master thesis.
 
 ## Config:
 
@@ -54,7 +55,7 @@ python app.py
 ]
 ```
 
-`postings` was stored in redis as `(sorted set)[http://jadianes.me/intro-redis-python]` as `('postings', term id, {term, term.freq, doc.name})`, for example:
+`postings` was stored in redis with [SortedSet](http://jadianes.me/intro-redis-python) as `('postings', term id, {term, term.freq, doc.name})`, for example:
 
 ```python
 [
@@ -87,3 +88,5 @@ r.zrangebyscore('postings', 1, 1 + 3 - 1)
 ```
 
 Then plug into ranking model.
+
+A Python implemented ranking function [ranking.py](https://github.com/bwanglzu/ranking.py)
