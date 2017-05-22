@@ -3,7 +3,7 @@
 [![CircleCI](https://circleci.com/gh/bwanglzu/inverted-index.py/tree/master.svg?style=shield&circle)](https://circleci.com/gh/bwanglzu/inverted-index.py/tree/master)
 [![Requirements Status](https://requires.io/github/bwanglzu/inverted-index.py/requirements.svg?branch=master)](https://requires.io/github/bwanglzu/inverted-index.py/requirements/?branch=master)
 [![codecov](https://codecov.io/gh/bwanglzu/inverted-index.py/branch/master/graph/badge.svg)](https://codecov.io/gh/bwanglzu/inverted-index.py)
-[![Language](https://img.shields.io/badge/language-python-brightgreen.svg)](https://www.python.org/)]
+[![Language](https://img.shields.io/badge/language-python-brightgreen.svg)](https://www.python.org/)
 [![License](http://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bwanglzu/inverted-index.py/blob/master/LICENSE)
 
 Eanble fast search for information retrieval (text retrieval/text[tag]-based multimedia retrieval).
