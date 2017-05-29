@@ -16,12 +16,18 @@ class IO:
         self.run_id = 0
 
     def json_reader(self, path):
-        with open(path) as f:
-            return json.load(f)
+        with open(path, 'r') as f:
+            try:
+                return json.load(f)
+            except (UnicodeDecodeError,ValueError):
+                return []
 
     def json_writer(self, path, content):
         with open(path, 'w') as f:
-            json.dump(content, f)
+            try:
+                json.dump(content, f)
+            except (UnicodeDecodeError,ValueError):
+                pass
 
     def clear_temp(self):
         """clear temp folder"""

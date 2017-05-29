@@ -46,7 +46,9 @@ def _build_inverted_index(data):
     r_p.flushdb()
     # get all terms.
     terms = [item['t'] for item in data]
+    print ("start build dictionary ...")
     dic = manipulate._dict_aggregation(terms)
+    print ("start build postings ...")
     manipulate._post_aggregation(r_p, data)
     return dic
 
