@@ -3,6 +3,7 @@ import os
 import json
 import string
 import redis_init
+import pandas as pd
 from itertools import chain
 from operator import itemgetter
 
@@ -33,17 +34,22 @@ def alphabetically(terms):
     return sorted(terms, key=itemgetter('t'))
 
 
-def _dict_aggregation(terms):
+def _dict_aggregation(data):
     """Generate dictionary, term: doc.freq.
     - Args:
     data: list(dict) of aggregated runs.
     """
     dictionary = []
+    terms = [item['t'] for item in data]
+    data = pd.DataFrame(data)
+    processed_terms = []
     for idx, term in enumerate(terms):
-        count = terms.count(term)
-        if count > 0:
-            dictionary.append({term: count, 'id': idx})
-            terms = filter(lambda a: a != term, terms)
+        if term in processed_terms:
+            continue
+        sub = data[data.t == term]
+        document_frequency = len(sub.d.unique())
+        processed_terms.append(term)
+        dictionary.append({term:document_frequency, 'id': idx})
 
     return dictionary
 
