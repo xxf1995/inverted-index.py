@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 import json
+import uuid
 import mult_thread
 import manipulate
 
@@ -106,7 +107,7 @@ class IO:
             terms)
         self.run_id += 1
 
-    def _merge_run_pairwisely(self, run1_path, run2_path):
+    def _merge_run_pairwisely(self, run1_path, run2_path, is_final = False):
         """Merge runs pairwisely, sort alphabetically"""
         terms_run1 = self.json_reader(run1_path)
         terms_run2 = self.json_reader(run2_path)
@@ -115,9 +116,13 @@ class IO:
         # delete run1 and run 2
         os.remove(run1_path)
         os.remove(run2_path)
+        if is_final:
+            self.json_writer(self.temp + 'merged.json',
+                terms_merge)
         # store merged run
-        self.json_writer(self.temp + 'merged.json',
-            terms_merge)
+        else:
+            self.json_writer(self.temp + str(uuid.uuid4()) + '.json',
+                terms_merge)
 
     def merge_runs(self):
         """Merge sorted runs into big text
@@ -127,7 +132,11 @@ class IO:
         """
         # change current dir to temp dir
         docs, num_docs = self._get_docs_with_path(self.temp)
+        current_idx = 0
         # merge sorted runs pair-wisely
         while num_docs >= 2:
-            self._merge_run_pairwisely(docs[0], docs[1])
+            if num_docs == 2:
+                self._merge_run_pairwisely(docs[0], docs[1], is_final = True)
+            else:
+                self._merge_run_pairwisely(docs[0], docs[1])
             docs, num_docs = self._get_docs_with_path(self.temp)
