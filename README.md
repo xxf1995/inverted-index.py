@@ -2,7 +2,6 @@
 
 [![CircleCI](https://circleci.com/gh/bwanglzu/inverted-index.py/tree/master.svg?style=shield&circle)](https://circleci.com/gh/bwanglzu/inverted-index.py/tree/master)
 [![Requirements Status](https://requires.io/github/bwanglzu/inverted-index.py/requirements.svg?branch=master)](https://requires.io/github/bwanglzu/inverted-index.py/requirements/?branch=master)
-[![codecov](https://codecov.io/gh/bwanglzu/inverted-index.py/branch/master/graph/badge.svg)](https://codecov.io/gh/bwanglzu/inverted-index.py)
 [![Language](https://img.shields.io/badge/language-python-brightgreen.svg)](https://www.python.org/)
 [![License](http://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bwanglzu/inverted-index.py/blob/master/LICENSE)
 
@@ -18,7 +17,9 @@ With `.env` under project root.
 DIRECTORY=/.../.../...  # Documents to index
 HOST=localhost # redis host
 PORT=6379 # redis port
-POST_DB=1 # redis db
+DBP=1 # redis db to store postings
+DBD=2 # redis db to store dictionary
+DBO=3 # redis db to store global statistics
 ```
 
 ## Pipeline:
@@ -48,45 +49,55 @@ python app.py
 
 ## Index
 
-`dictionary` was stored as a json file in `../project/utils/dictionary/` as: `[{"term": {"document frequency": number, "term id": number}}]`, e.g.:
+`dictionary` was stored in redis `DBP` as `{'df': document frequency, 'id': id, 'd': document name}`:
 
 ```python
-[
-    {"a": {"df": 1, "id": 0}},
-    ....
-]
+...
+{'df': '2', 'id': '85dd927c-844f-40b8-af26-040d16d0fe9b', 'd': 'd2.txt,d3.txt'}
+...
 ```
 
-`postings` was stored in redis with [SortedSet](http://jadianes.me/intro-redis-python) as `('postings', term id, {term, term.freq, doc.name})`, for example:
+`postings` was stored in redis with as `{'tf': term frequency, 't': term, 'd': document}`:
 
 ```python
-[
-    (postings, 1, "{'tf': 1, 't': 'a', 'd': '1.txt'}"),
-    ...
-]
+# appear in single document
+{'tf': '1', 't': 'logical', 'd': 'd2.txt'}
+# appear in multiple documents
+{'tf': '1,1', 't': 'logical', 'd': 'd2.txt,d3.txt'}
 ```
 
-`postings` and `dictionary` is connected by term_id, i.e. `id` in `postings`.
+`postings` and `dictionary` is connected by `id`, i.e. `id` in `dictionary`. First use term query `dictionary` with term name, use retrieved `id` field get id from `postings`.
+
+Global statistics was also stored, such as `number of documents in collection` and `document length`:
+
+```python
+# number of documents in collection
+{'num_docs': 100}
+# document length
+{'d1.txt': 12}
+```
 
 ## What's next?
 
-1. Load `dictionary` into memory for fast query and query documents from redis.
-2. Get term to be queried from memory.
-3. Retrieve `term.freq`, `doc.id` from `postings` in redis with:
+1. Connect redis.
+2. query by `dictionary` by term.
+3. query `postings` by `id`.
 
 ```python
 import redis
 # init redis instance
-# configuration same as .env
-r = redis.StrictRedis(
-        host=localhost,
-        port=6379,
-        db=1)
-# query the first term, (suppose first term is a and id is 0, df is 1)
-# with z.zrangebyscore('postings', id, id + df - 1)
-r.zrangebyscore('postings', 0, 0)
-# another example, term `b`, id is 1, df is 3
-r.zrangebyscore('postings', 1, 1 + 3 - 1)
+r_p = redis.Redis(host, port, db_name) # db of postings
+r_d = redis.Redis(host, port, db_name) # db of dictionary
+r_o = redis.Redis(host, port, db_name) # db of global statistics
+# query df -> tf -> number docs and document length
+print r_p.hgetall('logical')
+>> {'df': '2', 'id': '85dd927c-844f-40b8-af26-040d16d0fe9b', 'd': 'd2.txt,d3.txt'}
+print r_d.hgetall(r_p.hgetall('logical')['id'])
+>> {'tf': '1,1', 't': 'logical', 'd': 'd2.txt,d3.txt'}
+print r_o.get('num_docs')
+>> 5
+print r_o.get('d3.txt')
+>> 9
 ```
 
 Then plug into ranking model.

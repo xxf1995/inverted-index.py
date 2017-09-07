@@ -2,4 +2,4 @@ init:
 	pip install -r requirements.txt
 
 test:
-	nosetests --with-coverage
+	pytest tests/ --cov inverted_index/ --cov-report term-missing

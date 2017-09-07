@@ -4,3 +4,4 @@ codecov>=2.0.5
 redis>=2.10.3
 mock>=2.0.0
 pandas>=0.18.0
+numexpr>=2.6.2
