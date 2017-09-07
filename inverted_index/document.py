@@ -1,5 +1,4 @@
 """Document class, read document, clean document, get terms."""
-import bson
 import uuid
 import string
 from nltk.corpus import stopwords
