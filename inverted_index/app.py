@@ -1,7 +1,6 @@
 import os
 import util
 from document import Document
-from collection import Collection
 from tqdm import tqdm
 
 
