@@ -6,8 +6,6 @@ from tqdm import tqdm
 
 def pipeline():
     """Build inverted index pipeline."""
-    # clear temp folder.
-    util.clear_temp()
     # read docs.
     docs = util.get_docs()
     # init connector
