@@ -1,6 +1,8 @@
 """Document class, read document, clean document, get terms."""
 import uuid
 import string
+import nltk
+nltk.download('stopwords')
 from nltk.corpus import stopwords
 from collections import Counter
 
